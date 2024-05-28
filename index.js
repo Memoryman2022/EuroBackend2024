@@ -16,7 +16,7 @@ const predictionRoutes = require("./routes/prediction.router");
 const initializeMessageRoutes = require("./routes/messages.router");
 
 const MONGO_URI = process.env.MONGODB_URI;
-const PORT = process.env.PORT || 5005;
+const PORT = process.env.PORT || 3000;
 
 mongoose
   .connect(MONGO_URI)
