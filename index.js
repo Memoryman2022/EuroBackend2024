@@ -29,7 +29,8 @@ app.use(
       "http://localhost:3000",
       "http://localhost:5173",
       process.env.ORIGIN,
-      "https://eurosweepstake2024.netlify.app",
+      process.env.FRONTEND_URL,
+      process.env.FRONTEND_IP_URL,
     ],
     credentials: true,
   })
