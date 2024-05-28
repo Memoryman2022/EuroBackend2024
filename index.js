@@ -25,7 +25,11 @@ mongoose
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", process.env.ORIGIN],
+    origin: [
+      "http://localhost:3000",
+      process.env.ORIGIN,
+      "https://eurosweepstake2024.netlify.app",
+    ],
     credentials: true,
   })
 );
