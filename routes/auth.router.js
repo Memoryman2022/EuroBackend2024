@@ -32,7 +32,7 @@ if (!fs.existsSync(uploadsDir)) {
 
 //Post /register
 router.post(
-  "/auth/register",
+  "/register",
   upload.single("profileImage"),
   async (req, res, next) => {
     try {
@@ -93,8 +93,8 @@ router.post(
   }
 );
 
-// Post /auth/login
-router.post("/auth/login", async (req, res, next) => {
+// Post /login
+router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const existingUser = await User.findOne({ email });
@@ -133,8 +133,8 @@ router.post("/auth/login", async (req, res, next) => {
   }
 });
 
-// Get /auth/verify
-router.get("/auth/verify", authenticateToken, (req, res) => {
+// Get /verify
+router.get("/verify", authenticateToken, (req, res) => {
   res.status(200).json(req.payload);
 });
 
