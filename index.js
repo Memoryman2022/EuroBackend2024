@@ -29,6 +29,7 @@ app.use(
       const allowedOrigins = [
         process.env.FRONTEND_URL,
         process.env.FRONTEND_IP_URL,
+        "https://eurosweepstake2024.netlify.app",
       ];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
