@@ -35,13 +35,13 @@ app.use(morgan("dev"));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use("/api", authRoutes);
-app.use("/api", userRoutes);
-app.use("/api", predictionRoutes);
+app.use("/auth", authRoutes); // Registering auth routes correctly
+app.use("/api/users", userRoutes); // Adjusting this to be more specific
+app.use("/api/predictions", predictionRoutes); // Adjusting this to be more specific
 
 const io = initializeSocket(server); // Initialize WebSocket server and get io instance
 
-app.use("/api", initializeMessageRoutes(io));
+app.use("/api/messages", initializeMessageRoutes(io)); // Adjusting this to be more specific
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
