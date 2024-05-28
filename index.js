@@ -29,8 +29,6 @@ app.use(
       const allowedOrigins = [
         process.env.FRONTEND_URL,
         process.env.FRONTEND_IP_URL,
-        "http://localhost:5173", // Local development
-        "http://192.168.0.113:5173", // Replace with your actual IP address and port
       ];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
