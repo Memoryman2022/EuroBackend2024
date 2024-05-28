@@ -31,6 +31,7 @@ app.use(
       process.env.ORIGIN,
       process.env.FRONTEND_URL,
       process.env.FRONTEND_IP_URL,
+      "https://eurosweepstake2024.netlify.app",
     ],
     credentials: true,
   })
