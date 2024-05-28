@@ -27,6 +27,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
+      "http://localhost:5173",
       process.env.ORIGIN,
       "https://eurosweepstake2024.netlify.app",
     ],
