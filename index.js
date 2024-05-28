@@ -25,18 +25,7 @@ mongoose
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        process.env.FRONTEND_URL,
-        process.env.FRONTEND_IP_URL,
-        "https://eurosweepstake2024.netlify.app",
-      ];
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: ["http://localhost:3000", process.env.ORIGIN],
     credentials: true,
   })
 );

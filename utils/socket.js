@@ -3,14 +3,11 @@ const { Server } = require("socket.io");
 const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: [
-        process.env.FRONTEND_URL,
-        process.env.FRONTEND_IP_URL,
-        "https://eurosweepstake2024.netlify.app",
-      ],
+      origin: ["http://localhost:3000", process.env.ORIGIN],
       methods: ["GET", "POST"],
       credentials: true,
     },
+    transports: ["websocket", "polling"], // Ensure both transports are allowed
   });
 
   io.on("connection", (socket) => {
