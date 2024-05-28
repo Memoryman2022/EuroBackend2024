@@ -30,7 +30,7 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
 }
 
-//Post /register
+// Post /register
 router.post(
   "/register",
   upload.single("profileImage"),
@@ -124,9 +124,7 @@ router.post("/login", async (req, res, next) => {
       position: existingUser.position,
     };
 
-    res
-      .status(200)
-      .json({ token, userId: existingUser._id, user: existingUser });
+    res.status(200).json({ token, userId: existingUser._id, user });
   } catch (err) {
     console.error("Error during login:", err);
     next(err);
