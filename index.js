@@ -19,8 +19,8 @@ const MONGO_URI = process.env.MONGODB_URI;
 const PORT = process.env.PORT || 3000;
 
 mongoose
-  .connect(MONGO_URI)
-  .then(() => console.log("Connected to MongoDB"))
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log(`Connected the Database: "${x.connections[0].name}"`))
   .catch((err) => console.error("Error connecting to the DB", err));
 
 app.use(
@@ -31,7 +31,6 @@ app.use(
       process.env.ORIGIN,
       process.env.FRONTEND_URL,
       process.env.FRONTEND_IP_URL,
-      "https://eurosweepstake2024.netlify.app",
     ],
     credentials: true,
   })
@@ -42,7 +41,7 @@ app.use(morgan("dev"));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use("/auth", authRoutes); // Registering auth routes correctly
+app.use("/api/auth", authRoutes); // Registering auth routes correctly
 app.use("/api/users", userRoutes); // Adjusting this to be more specific
 app.use("/api/predictions", predictionRoutes); // Adjusting this to be more specific
 
