@@ -9,6 +9,7 @@ const userSchema = new Schema({
   score: { type: Number, default: 0 },
   movement: { type: String, default: "" },
   position: { type: Number, default: 0 },
+  previousPosition: { type: Number, default: 0 }, // Add previousPosition field
 });
 
 module.exports = model("User", userSchema);
