@@ -14,47 +14,54 @@ const authRoutes = require("./routes/auth.router");
 const userRoutes = require("./routes/user.router");
 const predictionRoutes = require("./routes/prediction.router");
 const initializeMessageRoutes = require("./routes/messages.router");
+const { errorHandler, notFoundHandler } = require("./middleware/errorHandling");
 
-const MONGO_URI = process.env.MONGODB_URI;
-const PORT = process.env.PORT || 3000;
+// Determine the environment and set the MongoDB URI accordingly
+const isDevelopment = process.env.NODE_ENV === "development";
+const MONGO_URI = isDevelopment
+  ? process.env.MONGODB_URI_LOCAL
+  : process.env.MONGODB_URI_REMOTE;
+const PORT = process.env.PORT || 5005;
 
+// Connect to MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => console.log(`Connected the Database: "${x.connections[0].name}"`))
+  .connect(MONGO_URI)
+  .then((connection) =>
+    console.log(`Connected to Database: "${connection.connections[0].name}"`)
+  )
   .catch((err) => console.error("Error connecting to the DB", err));
 
+// Middleware
 app.use(
   cors({
     origin: [
-      "http://localhost:3000",
       "http://localhost:5173",
       process.env.ORIGIN,
-      process.env.FRONTEND_URL,
-      process.env.FRONTEND_IP_URL,
+      "http://192.168.0.113:5173",
     ],
     credentials: true,
   })
 );
-
 app.use(express.json());
 app.use(morgan("dev"));
 
+// Serve static files from the uploads directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use("/api/auth", authRoutes); // Registering auth routes correctly
-app.use("/api/users", userRoutes); // Adjusting this to be more specific
-app.use("/api/predictions", predictionRoutes); // Adjusting this to be more specific
+// Register routes
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/predictions", predictionRoutes);
 
-const io = initializeSocket(server); // Initialize WebSocket server and get io instance
+// Initialize WebSocket server
+const io = initializeSocket(server);
+app.use("/api", initializeMessageRoutes(io));
 
-app.use("/api/messages", initializeMessageRoutes(io)); // Adjusting this to be more specific
+// Error handling middleware
+app.use(errorHandler);
+app.use(notFoundHandler);
 
-app.use((err, req, res, next) => {
-  res.status(err.status || 500).json({
-    message: err.message,
-  });
-});
-
+// Start the server
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Listening on port ${PORT}`);
 });

@@ -5,7 +5,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-const User = require("../models/User.model.js");
+const User = require("../models/User.model");
 const { AppError } = require("../middleware/errorHandling");
 const { authenticateToken } = require("../middleware/authenticateToken");
 
@@ -97,13 +97,16 @@ router.post(
 router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    console.log("Login request received with email:", email);
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
+      console.log("User not found for email:", email);
       throw new AppError("User not found", 400);
     }
 
     const passwordMatch = await bcrypt.compare(password, existingUser.password);
     if (!passwordMatch) {
+      console.log("Incorrect password for email:", email);
       throw new AppError("Incorrect password", 400);
     }
 

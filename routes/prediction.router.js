@@ -4,7 +4,7 @@ const Prediction = require("../models/Predictions.model");
 const { authenticateToken } = require("../middleware/authenticateToken");
 
 // Route to create a new prediction
-router.post("/predictions", authenticateToken, async (req, res, next) => {
+router.post("/", authenticateToken, async (req, res, next) => {
   try {
     const {
       gameId,
@@ -47,7 +47,7 @@ router.post("/predictions", authenticateToken, async (req, res, next) => {
 });
 
 // Route to fetch all predictions for the authenticated user
-router.get("/predictions", authenticateToken, async (req, res, next) => {
+router.get("/", authenticateToken, async (req, res, next) => {
   try {
     const predictions = await Prediction.find({ userId: req.payload.userId });
     res.status(200).json(predictions);
@@ -57,7 +57,7 @@ router.get("/predictions", authenticateToken, async (req, res, next) => {
 });
 
 // Route to fetch all predictions for all users grouped by game
-router.get("/predictions/all", authenticateToken, async (req, res, next) => {
+router.get("/all", authenticateToken, async (req, res, next) => {
   try {
     const predictions = await Prediction.find().populate("userId", "userName");
 

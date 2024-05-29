@@ -41,7 +41,7 @@ router.get(
 );
 
 // Find all users and update positions
-router.get("/users", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
     const users = await User.find({}).sort({ score: -1 });
 
@@ -65,7 +65,7 @@ router.get("/users", async (req, res, next) => {
 });
 
 // Update user scores
-router.put("/users/update-scores", async (req, res, next) => {
+router.put("/update-scores", async (req, res, next) => {
   try {
     const { users } = req.body;
     for (const userData of users) {
