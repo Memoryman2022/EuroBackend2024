@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
 const User = require("../models/User.model");
-
 const Prediction = require("../models/Predictions.model");
 const { authenticateToken } = require("../middleware/authenticateToken");
 
@@ -68,10 +66,8 @@ router.get("/all", authenticateToken, async (req, res, next) => {
       "userId",
       "userName"
     );
-    console.log("All Predictions:", allPredictions);
 
     const allUsers = await User.find().select("_id");
-    console.log("All Users:", allUsers);
 
     const predictionsByGame = {};
 
@@ -83,37 +79,39 @@ router.get("/all", authenticateToken, async (req, res, next) => {
       predictionsByGame[prediction.gameId].push(prediction);
     });
 
-    const results = Object.keys(predictionsByGame).map((gameId) => {
-      const predictions = predictionsByGame[gameId];
-      const match = predictions[0]; // All predictions have the same match details
+    const results = Object.keys(predictionsByGame)
+      .map((gameId) => {
+        const predictions = predictionsByGame[gameId];
+        const match = predictions[0]; // All predictions have the same match details
 
-      const allUsersPredicted = allUsers.every((user) =>
-        predictions.some((prediction) => prediction.userId._id.equals(user._id))
-      );
+        const allUsersPredicted = allUsers.every((user) =>
+          predictions.some((prediction) =>
+            prediction.userId._id.equals(user._id)
+          )
+        );
 
-      console.log(`Game ${gameId} - All Users Predicted:`, allUsersPredicted);
-      const currentTime = new Date(); // Actual current time
-      const simulatedCurrentTime = new Date(
-        currentTime.getTime() - (ONE_HOUR - 5 * 60 * 1000)
-      ); // 55 minutes before the actual time
+        const matchStartTime = new Date(match.date); // Assuming match start time is stored in `date` field
+        const currentTime = new Date();
+        const timeDifference = matchStartTime - currentTime;
+        const isOneHourBeforeMatch = timeDifference < ONE_HOUR;
 
-      const matchStartTime = new Date(match.date); // Assuming match start time is stored in `date` field
-      const isOneHourBeforeMatch = matchStartTime - new Date() <= ONE_HOUR;
+        console.log(`Game ${gameId} - Match Start Time: ${matchStartTime}`);
+        console.log(`Game ${gameId} - Current Time: ${currentTime}`);
+        console.log(`Game ${gameId} - Time Difference: ${timeDifference}`);
+        console.log(
+          `Game ${gameId} - Is One Hour Before Match: ${isOneHourBeforeMatch}`
+        );
 
-      console.log(
-        `Game ${gameId} - Is One Hour Before Match:`,
-        isOneHourBeforeMatch
-      );
-
-      return {
-        gameId: gameId,
-        team1: match.team1,
-        team2: match.team2,
-        startTime: match.date,
-        revealPredictions: allUsersPredicted || isOneHourBeforeMatch,
-        predictions: predictions,
-      };
-    });
+        return {
+          gameId: gameId,
+          team1: match.team1,
+          team2: match.team2,
+          startTime: match.date,
+          revealPredictions: allUsersPredicted || isOneHourBeforeMatch,
+          predictions: predictions,
+        };
+      })
+      .filter((game) => game.revealPredictions);
 
     res.status(200).json(results);
   } catch (error) {

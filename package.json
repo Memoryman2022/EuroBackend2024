@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV=production node index.js",
-    "dev": "NODE_ENV=development nodemon index.js"
+    "dev": "NODE_ENV=development nodemon index.js",
+    "stop": "kill-port 5005"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,7 @@
     "socket.io": "^4.7.5"
   },
   "devDependencies": {
-    "@flydotio/dockerfile": "^0.5.7"
+    "@flydotio/dockerfile": "^0.5.7",
+    "kill-port": "^2.0.1"
   }
 }
