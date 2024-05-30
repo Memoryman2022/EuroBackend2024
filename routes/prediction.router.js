@@ -4,8 +4,6 @@ const User = require("../models/User.model");
 const Prediction = require("../models/Predictions.model");
 const { authenticateToken } = require("../middleware/authenticateToken");
 
-const ONE_HOUR = 60 * 60 * 1000;
-
 // Route to create a new prediction
 router.post("/", authenticateToken, async (req, res, next) => {
   try {
@@ -59,6 +57,8 @@ router.get("/", authenticateToken, async (req, res, next) => {
   }
 });
 
+const ONE_HOUR = 60 * 60 * 1000;
+
 // Route to fetch all predictions for all users grouped by game with conditions
 router.get("/all", authenticateToken, async (req, res, next) => {
   try {
@@ -66,9 +66,7 @@ router.get("/all", authenticateToken, async (req, res, next) => {
       "userId",
       "userName"
     );
-
     const allUsers = await User.find().select("_id");
-
     const predictionsByGame = {};
 
     // Group predictions by gameId
@@ -93,7 +91,8 @@ router.get("/all", authenticateToken, async (req, res, next) => {
         const matchStartTime = new Date(match.date); // Assuming match start time is stored in `date` field
         const currentTime = new Date();
         const timeDifference = matchStartTime - currentTime;
-        const isOneHourBeforeMatch = timeDifference < ONE_HOUR;
+        const isOneHourBeforeMatch =
+          timeDifference <= ONE_HOUR && timeDifference >= 0;
 
         console.log(`Game ${gameId} - Match Start Time: ${matchStartTime}`);
         console.log(`Game ${gameId} - Current Time: ${currentTime}`);
