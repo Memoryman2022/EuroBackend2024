@@ -3,6 +3,24 @@ const router = express.Router();
 const User = require("../models/User.model");
 const Prediction = require("../models/Predictions.model");
 const { authenticateToken } = require("../middleware/authenticateToken");
+const { parse, differenceInMilliseconds } = require("date-fns");
+
+const ONE_HOUR = 60 * 60 * 1000; // One hour in milliseconds
+
+// Function to check if the prediction window is expired
+const isPredictionWindowExpired = (gameDate) => {
+  const matchStartTime = parse(
+    `${gameDate} ${new Date().getFullYear()}`,
+    "dd MMM HH:mm yyyy",
+    new Date()
+  );
+  const currentTime = new Date();
+  const timeDifference = differenceInMilliseconds(matchStartTime, currentTime);
+  const isOneHourBeforeMatch =
+    timeDifference <= ONE_HOUR && timeDifference >= 0;
+
+  return isOneHourBeforeMatch;
+};
 
 // Route to create a new prediction
 router.post("/", authenticateToken, async (req, res, next) => {
@@ -57,8 +75,6 @@ router.get("/", authenticateToken, async (req, res, next) => {
   }
 });
 
-const ONE_HOUR = 60 * 60 * 1000;
-
 // Route to fetch all predictions for all users grouped by game with conditions
 router.get("/all", authenticateToken, async (req, res, next) => {
   try {
@@ -88,17 +104,13 @@ router.get("/all", authenticateToken, async (req, res, next) => {
           )
         );
 
-        const matchStartTime = new Date(match.date); // Assuming match start time is stored in `date` field
-        const currentTime = new Date();
-        const timeDifference = matchStartTime - currentTime;
-        const isOneHourBeforeMatch =
-          timeDifference <= ONE_HOUR && timeDifference >= 0;
+        const isOneHourBeforeMatch = isPredictionWindowExpired(match.date);
 
-        console.log(`Game ${gameId} - Match Start Time: ${matchStartTime}`);
-        console.log(`Game ${gameId} - Current Time: ${currentTime}`);
-        console.log(`Game ${gameId} - Time Difference: ${timeDifference}`);
         console.log(
           `Game ${gameId} - Is One Hour Before Match: ${isOneHourBeforeMatch}`
+        );
+        console.log(
+          `Game ${gameId} - All Users Predicted: ${allUsersPredicted}`
         );
 
         return {
