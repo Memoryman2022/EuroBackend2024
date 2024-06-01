@@ -8,6 +8,7 @@ const fs = require("fs");
 const User = require("../models/User.model");
 const { AppError } = require("../middleware/errorHandling");
 const { authenticateToken } = require("../middleware/authenticateToken");
+const authenticateAdmin = require("../middleware/authenticateAdmin");
 
 const router = express.Router();
 const saltRounds = 10;
@@ -33,6 +34,72 @@ if (!fs.existsSync(uploadsDir)) {
 // Post /register
 router.post(
   "/register",
+  upload.single("profileImage"),
+  async (req, res, next) => {
+    try {
+      const { userName, email, password, role } = req.body;
+      const profileImage = req.file ? `/uploads/${req.file.filename}` : "";
+
+      if (userName === "" || email === "" || password === "") {
+        throw new AppError("Please fill out the registration fields", 400);
+      }
+
+      const emailRegex = new RegExp(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/);
+      if (!emailRegex.test(email)) {
+        throw new AppError("Email must be a valid email", 400);
+      }
+
+      const passwordRegex = new RegExp(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/);
+      if (!passwordRegex.test(password)) {
+        throw new AppError(
+          "Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.",
+          400
+        );
+      }
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        throw new AppError("Email already in use", 400);
+      }
+
+      const hashedPassword = bcrypt.hashSync(
+        password,
+        bcrypt.genSaltSync(saltRounds)
+      );
+
+      const createdUser = await User.create({
+        email,
+        password: hashedPassword,
+        userName,
+        profileImage,
+        role: role || "user", // Set role or default to "user"
+      });
+
+      console.log("User created:", createdUser);
+
+      const token = jwt.sign(
+        { userId: createdUser._id },
+        process.env.JWT_SECRET,
+        { expiresIn: "6h" }
+      );
+
+      console.log("Generated token:", token);
+
+      res
+        .status(201)
+        .json({ token, userId: createdUser._id, user: createdUser });
+    } catch (err) {
+      console.error("Error during registration:", err);
+      next(err);
+    }
+  }
+);
+
+// Post /register/admin (Only for authenticated admin users)
+router.post(
+  "/register/admin",
+  authenticateToken,
+  authenticateAdmin,
   upload.single("profileImage"),
   async (req, res, next) => {
     try {
@@ -71,9 +138,10 @@ router.post(
         password: hashedPassword,
         userName,
         profileImage,
+        role: "admin", // Explicitly set role to "admin"
       });
 
-      console.log("User created:", createdUser);
+      console.log("Admin created:", createdUser);
 
       const token = jwt.sign(
         { userId: createdUser._id },
@@ -87,7 +155,7 @@ router.post(
         .status(201)
         .json({ token, userId: createdUser._id, user: createdUser });
     } catch (err) {
-      console.error("Error during registration:", err);
+      console.error("Error during admin registration:", err);
       next(err);
     }
   }
@@ -125,6 +193,7 @@ router.post("/login", async (req, res, next) => {
       profileImage: existingUser.profileImage,
       score: existingUser.score,
       position: existingUser.position,
+      role: existingUser.role, // Include role in response
     };
 
     res.status(200).json({ token, userId: existingUser._id, user });

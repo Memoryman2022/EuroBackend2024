@@ -10,6 +10,7 @@ const userSchema = new Schema({
   movement: { type: String, default: "" },
   position: { type: Number, default: 0 },
   previousPosition: { type: Number, default: 0 }, // Add previousPosition field
+  role: { type: String, enum: ["user", "admin"], default: "user" }, // Define user roles
 });
 
 module.exports = model("User", userSchema);
