@@ -13,6 +13,7 @@ const initializeSocket = require("./utils/socket");
 const authRoutes = require("./routes/auth.router");
 const userRoutes = require("./routes/user.router");
 const predictionRoutes = require("./routes/prediction.router");
+const realResultRoutes = require("./routes/realResult.router"); // Import the new routes
 const initializeMessageRoutes = require("./routes/messages.router");
 const { errorHandler, notFoundHandler } = require("./middleware/errorHandling");
 
@@ -57,6 +58,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/predictions", predictionRoutes);
+app.use("/api/realresults", realResultRoutes); // Register the real result routes
 
 // Initialize WebSocket server
 const io = initializeSocket(server);
