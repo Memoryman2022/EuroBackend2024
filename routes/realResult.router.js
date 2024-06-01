@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const RealResult = require("../models/RealResult.model");
-const { authenticateToken } = require("../middleware/authenticateToken");
+const Prediction = require("../models/Predictions.model");
+const User = require("../models/User.model");
 
 // Route to fetch the real result of a specific game
 router.get("/:gameId/result", async (req, res, next) => {
@@ -20,15 +21,10 @@ router.get("/:gameId/result", async (req, res, next) => {
 });
 
 // Route to save the real result for a specific game
-router.post("/:gameId/result", authenticateToken, async (req, res, next) => {
+router.post("/:gameId/result", async (req, res, next) => {
   try {
     const { gameId } = req.params;
     const { team1Score, team2Score, outcome } = req.body;
-
-    // Check if the user is an admin
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Forbidden" });
-    }
 
     const realResult = await RealResult.findOneAndUpdate(
       { gameId },
@@ -36,7 +32,44 @@ router.post("/:gameId/result", authenticateToken, async (req, res, next) => {
       { new: true, upsert: true }
     );
 
-    res.status(200).json(realResult);
+    // Fetch all predictions for this game
+    const predictions = await Prediction.find({ gameId });
+
+    // Update user scores based on predictions
+    for (const prediction of predictions) {
+      let points = 0;
+
+      // Correct score prediction
+      if (
+        prediction.team1Score === team1Score &&
+        prediction.team2Score === team2Score
+      ) {
+        points += 5;
+      }
+
+      // Correct outcome prediction
+      const predictedOutcome =
+        prediction.team1Score > prediction.team2Score
+          ? "team1 win"
+          : prediction.team1Score < prediction.team2Score
+          ? "team2 win"
+          : "draw";
+
+      if (predictedOutcome === outcome) {
+        points += 2;
+      }
+
+      // Update the user's score
+      const user = await User.findById(prediction.userId);
+      if (user) {
+        user.score += points;
+        await user.save();
+      }
+    }
+
+    res
+      .status(200)
+      .json({ message: "Real result and user scores updated successfully" });
   } catch (error) {
     next(error);
   }
