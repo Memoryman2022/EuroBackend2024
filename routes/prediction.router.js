@@ -83,14 +83,24 @@ router.get("/all", authenticateToken, async (req, res, next) => {
       "userName"
     );
     const allUsers = await User.find().select("_id");
+
+    if (!allPredictions || !allUsers) {
+      throw new Error("Error fetching predictions or users.");
+    }
+
     const predictionsByGame = {};
 
     // Group predictions by gameId
     allPredictions.forEach((prediction) => {
-      if (!predictionsByGame[prediction.gameId]) {
-        predictionsByGame[prediction.gameId] = [];
+      if (prediction.userId) {
+        // Ensure userId is not null
+        if (!predictionsByGame[prediction.gameId]) {
+          predictionsByGame[prediction.gameId] = [];
+        }
+        predictionsByGame[prediction.gameId].push(prediction);
+      } else {
+        console.error(`Prediction without userId found: ${prediction}`);
       }
-      predictionsByGame[prediction.gameId].push(prediction);
     });
 
     const results = Object.keys(predictionsByGame)
@@ -98,9 +108,16 @@ router.get("/all", authenticateToken, async (req, res, next) => {
         const predictions = predictionsByGame[gameId];
         const match = predictions[0]; // All predictions have the same match details
 
+        // Ensure match is not null
+        if (!match) {
+          console.error(`No match found for gameId: ${gameId}`);
+          return null; // Skip this gameId
+        }
+
         const allUsersPredicted = allUsers.every((user) =>
-          predictions.some((prediction) =>
-            prediction.userId._id.equals(user._id)
+          predictions.some(
+            (prediction) =>
+              prediction.userId && prediction.userId._id.equals(user._id)
           )
         );
 
