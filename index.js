@@ -14,6 +14,9 @@ const authRoutes = require("./routes/auth.router");
 const userRoutes = require("./routes/user.router");
 const predictionRoutes = require("./routes/prediction.router");
 const realResultRoutes = require("./routes/realResult.router"); // Import the new routes
+const standingsRoutes = require("./routes/standings.router");
+const roundOf16Routes = require("./routes/roundOf16.router");
+
 const initializeMessageRoutes = require("./routes/messages.router");
 const { errorHandler, notFoundHandler } = require("./middleware/errorHandling");
 
@@ -59,6 +62,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/predictions", predictionRoutes);
 app.use("/api/realresults", realResultRoutes); // Register the real result routes
+app.use("/api/standings", standingsRoutes);
+app.use("/api/roundof16", roundOf16Routes);
 
 // Initialize WebSocket server
 const io = initializeSocket(server);
