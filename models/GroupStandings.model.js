@@ -1,21 +1,23 @@
-// models/GroupStandings.model.js
-
 const mongoose = require("mongoose");
 
-const TeamStatsSchema = new mongoose.Schema({
-  team: String,
-  points: Number,
-  goalsFor: Number,
-  goalsAgainst: Number,
-  goalDifference: Number,
-  wins: Number,
-  draws: Number,
-  losses: Number,
+const TeamSchema = new mongoose.Schema({
+  name: { type: String },
+  points: { type: Number },
+  goalsFor: { type: Number },
+  goalsAgainst: { type: Number },
+  wins: { type: Number },
+  draws: { type: Number },
+  losses: { type: Number },
+  goalDifference: { type: Number },
+  previousPosition: { type: Number, default: null },
+  movement: { type: String, defualt: null },
 });
 
 const GroupStandingsSchema = new mongoose.Schema({
-  group: String,
-  standings: [TeamStatsSchema],
+  groupName: { type: String, required: true },
+  teams: [TeamSchema],
 });
 
-module.exports = mongoose.model("GroupStandings", GroupStandingsSchema);
+const GroupStandings = mongoose.model("GroupStandings", GroupStandingsSchema);
+
+module.exports = GroupStandings;

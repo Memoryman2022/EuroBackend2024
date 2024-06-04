@@ -62,7 +62,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/predictions", predictionRoutes);
 app.use("/api/realresults", realResultRoutes); // Register the real result routes
-app.use("/api/standings", standingsRoutes);
+app.use("/api/groupStandings", standingsRoutes);
 app.use("/api/roundof16", roundOf16Routes);
 
 // Initialize WebSocket server
