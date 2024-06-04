@@ -16,7 +16,7 @@ const predictionRoutes = require("./routes/prediction.router");
 const realResultRoutes = require("./routes/realResult.router"); // Import the new routes
 const standingsRoutes = require("./routes/standings.router");
 const roundOf16Routes = require("./routes/roundOf16.router");
-const quarterFinalRouter = require("./routes/quarterFinal.router");
+const quarterFinalRoutes = require("./routes/quarterFinal.router");
 
 const initializeMessageRoutes = require("./routes/messages.router");
 const { errorHandler, notFoundHandler } = require("./middleware/errorHandling");
@@ -65,7 +65,7 @@ app.use("/api/predictions", predictionRoutes);
 app.use("/api/realresults", realResultRoutes); // Register the real result routes
 app.use("/api/groupStandings", standingsRoutes);
 app.use("/api/roundof16", roundOf16Routes);
-app.use("/api/quarterfinals", quarterFinalRouter);
+app.use("/api/quarterfinalgames", quarterFinalRoutes);
 
 // Initialize WebSocket server
 const io = initializeSocket(server);
