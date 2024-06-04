@@ -1,7 +1,6 @@
 const express = require("express");
 const RoundOf16 = require("../models/RoundOf16.model"); // MongoDB model for storing Round of 16 fixtures
 const calculateStandings = require("../utils/calculateStandings");
-const populateKnockoutStages = require("../utils/populateKnockoutStages");
 
 const router = express.Router();
 
@@ -36,7 +35,6 @@ router.post("/calculate", async (req, res) => {
 
     // Calculate the standings and knockout stages
     const standings = calculateStandings(groupStageGames);
-    const knockoutStages = populateKnockoutStages(standings);
 
     // Store the fixtures in the database
     let roundOf16 = new RoundOf16({ fixtures: knockoutStages.roundOf16Games });
