@@ -1,8 +1,8 @@
 const express = require("express");
 const {
   calculateStandings,
-  calculateAndSendStandings,
-} = require("../utils/calculateStandings");
+  updateGroupStandings,
+} = require("../utils/updateGroupStandings");
 const GroupStandings = require("../models/GroupStandings.model");
 
 const router = express.Router();
@@ -11,7 +11,7 @@ const router = express.Router();
 router.post("/calculate", async (req, res) => {
   try {
     const { groupStageGames } = req.body;
-    const standings = await calculateStandings(groupStageGames);
+    const standings = calculateStandings(groupStageGames);
     res.json(standings);
   } catch (error) {
     console.error("Error calculating standings:", error);
@@ -25,14 +25,7 @@ router.post("/save", async (req, res) => {
     const { standings } = req.body;
 
     // Save each group's standings
-    for (const group in standings) {
-      await GroupStandings.findOneAndUpdate(
-        { group },
-        { group, teams: standings[group] },
-        { upsert: true, new: true }
-      );
-    }
-
+    await updateStandingsInDatabase(standings);
     res.status(201).send("Group standings saved");
   } catch (error) {
     console.error("Error saving group standings:", error);
@@ -44,12 +37,24 @@ router.post("/save", async (req, res) => {
 router.post("/calculate-and-update", async (req, res) => {
   try {
     const { groupStageGames } = req.body;
-    await calculateAndSendStandings(groupStageGames);
+    const standings = calculateStandings(groupStageGames);
+    await updateStandingsInDatabase(standings);
     res
       .status(200)
       .send("Standings calculated and Round of 16 fixtures updated");
   } catch (error) {
     console.error("Error calculating and updating standings:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// Route to update standings from real results
+router.post("/update-from-real-results", async (req, res) => {
+  try {
+    await updateGroupStandings();
+    res.status(200).send("Group standings updated from real results");
+  } catch (error) {
+    console.error("Error updating group standings from real results:", error);
     res.status(500).send("Internal Server Error");
   }
 });
