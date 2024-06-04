@@ -4,8 +4,7 @@ const RealResult = require("../models/RealResult.model");
 const Prediction = require("../models/Predictions.model");
 const User = require("../models/User.model");
 const updateGroupStandings = require("../utils/updateGroupStandings");
-
-const TOTAL_GROUP_GAMES = 36;
+const updateUserPositionsAndMovements = require("../utils/userPosition");
 
 // Route to fetch all real results
 router.get("/", async (req, res, next) => {
@@ -105,6 +104,9 @@ router.post("/:gameId/result", async (req, res, next) => {
         console.log(`Updated score for user ${user._id}: ${user.score}`);
       }
     }
+
+    // Update user positions and movements
+    await updateUserPositionsAndMovements();
 
     // Update group standings
     await updateGroupStandings();
