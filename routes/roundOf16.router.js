@@ -1,5 +1,7 @@
 // routes/roundOf16.js
 const express = require("express");
+const updateRoundOf16Games = require("../utils/updateRoundOf16Games");
+
 const RoundOf16 = require("../models/RoundOf16.model");
 const router = express.Router();
 
@@ -10,6 +12,16 @@ router.get("/", async (req, res) => {
     res.json(games);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+});
+
+// Update round of 16 games based on group standings
+router.post("/update", async (req, res) => {
+  try {
+    await updateRoundOf16Games();
+    res.status(200).send("Round of 16 games updated successfully");
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
