@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const updateRoundOf16Games = require("../utils/updateRoundOf16Games");
-const updateQuarterFinalGames = require("../utils/updateQuarterFinalGames");
-const updateSemiFinalGames = require("../utils/updateSemiFinalGames");
-const updateFinalGames = require("../utils/updateFinalGames");
+const {
+  updateRoundOf16Games,
+  updateQuarterFinalGames,
+  updateSemiFinalGames,
+  updateFinalGames,
+} = require("../utils/updateKnockoutGames");
 
 const RoundOf16 = require("../models/RoundOf16.model");
 const QuarterFinalGame = require("../models/QuarterFinal.model");
