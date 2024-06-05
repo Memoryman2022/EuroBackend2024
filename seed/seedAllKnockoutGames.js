@@ -28,7 +28,7 @@ const semiFinalGames = [
 ];
 
 const finalGames = [
-  { id: "F1", date: "13 Jul 21:00", team1: "S1", team2: "S2" },
+  { id: "F1", date: "14 Jul 21:00", team1: "S1", team2: "S2" },
 ];
 
 mongoose.connect("mongodb://localhost:27017/Euro_Sweepstake");
