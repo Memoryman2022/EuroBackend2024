@@ -15,10 +15,11 @@ const userRoutes = require("./routes/user.router");
 const predictionRoutes = require("./routes/prediction.router");
 const realResultRoutes = require("./routes/realResult.router");
 const standingsRoutes = require("./routes/standings.router");
-const roundOf16Routes = require("./routes/roundOf16.router");
-const quarterFinalRoutes = require("./routes/quarterFinal.router");
-const semiFinalRoutes = require("./routes/semiFinal.router");
-const finalRouter = require("./routes/final.router");
+// const roundOf16Routes = require("./routes/roundOf16.router");
+// const quarterFinalRoutes = require("./routes/quarterFinal.router");
+// const semiFinalRoutes = require("./routes/semiFinal.router");
+// const finalRouter = require("./routes/final.router");
+const knockoutRoutes = require("./routes/knockout.router");
 
 const initializeMessageRoutes = require("./routes/messages.router");
 const { errorHandler, notFoundHandler } = require("./middleware/errorHandling");
@@ -66,10 +67,11 @@ app.use("/api/users", userRoutes);
 app.use("/api/predictions", predictionRoutes);
 app.use("/api/realresults", realResultRoutes);
 app.use("/api/groupStandings", standingsRoutes);
-app.use("/api/roundof16", roundOf16Routes);
-app.use("/api/quarterfinalgames", quarterFinalRoutes);
-app.use("/api/semifinalgames", semiFinalRoutes);
-app.use("/api/finalgames", finalRouter);
+// app.use("/api/roundof16", roundOf16Routes);
+// app.use("/api/quarterfinalgames", quarterFinalRoutes);
+// app.use("/api/semifinalgames", semiFinalRoutes);
+// app.use("/api/finalgames", finalRouter);
+app.use("/api/knockout", knockoutRoutes);
 
 // Initialize WebSocket server
 const io = initializeSocket(server);

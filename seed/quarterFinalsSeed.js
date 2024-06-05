@@ -25,4 +25,4 @@ const seedDB = async () => {
 
 seedDB();
 
-//node seed/quarterFinalsSeed.js
+// node seed/quarterFinalsSeed.js
