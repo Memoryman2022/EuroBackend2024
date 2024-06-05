@@ -1,11 +1,11 @@
 const RealResult = require("../models/RealResult.model");
-const QuarterFinalGame = require("../models/QuarterFinal.model");
-const { quarterFinalGames } = require("../config/quarterFinalGames");
+const FinalGame = require("../models/Final.model");
+const { finalGames } = require("../config/finalGames");
 
-const updateQuarterFinalGames = async () => {
+const updateFinalGames = async () => {
   try {
     const realResults = await RealResult.find();
-    const roundOf16Winners = {};
+    const semiFinalWinners = {};
 
     realResults.forEach((result) => {
       const winner =
@@ -16,13 +16,13 @@ const updateQuarterFinalGames = async () => {
           : null; // Handle draws if necessary
 
       if (winner) {
-        roundOf16Winners[result.gameId] = winner;
+        semiFinalWinners[result.gameId] = winner;
       }
     });
 
-    const quarterFinalGamesData = quarterFinalGames.map((game) => {
-      const team1 = roundOf16Winners[game.team1];
-      const team2 = roundOf16Winners[game.team2];
+    const finalGamesData = finalGames.map((game) => {
+      const team1 = semiFinalWinners[game.team1];
+      const team2 = semiFinalWinners[game.team2];
 
       if (!team1 || !team2) {
         throw new Error(
@@ -38,14 +38,14 @@ const updateQuarterFinalGames = async () => {
       };
     });
 
-    await QuarterFinalGame.deleteMany({});
-    await QuarterFinalGame.insertMany(quarterFinalGamesData);
+    await FinalGame.deleteMany({});
+    await FinalGame.insertMany(finalGamesData);
 
-    console.log("Quarter-final games updated successfully");
+    console.log("Final games updated successfully");
   } catch (error) {
-    console.error("Error updating quarter-final games:", error);
+    console.error("Error updating final games:", error);
     throw error;
   }
 };
 
-module.exports = updateQuarterFinalGames;
+module.exports = updateFinalGames;

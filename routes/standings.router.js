@@ -63,7 +63,7 @@ router.post("/update-from-real-results", async (req, res) => {
 router.get("/latest", async (req, res) => {
   try {
     const standings = await GroupStandings.find().sort({ timestamp: -1 });
-
+    console.log("Fetched group standings:", standings);
     if (standings.length > 0) {
       const response = standings.reduce((acc, groupStanding) => {
         acc[groupStanding.groupName] = groupStanding.teams;
