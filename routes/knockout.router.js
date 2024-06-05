@@ -2,35 +2,14 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  updateRoundOf16Games,
   updateQuarterFinalGames,
   updateSemiFinalGames,
   updateFinalGames,
 } = require("../utils/updateKnockoutGames");
 
-const RoundOf16 = require("../models/RoundOf16.model");
 const QuarterFinalGame = require("../models/QuarterFinal.model");
 const SemiFinalGame = require("../models/SemiFinal.model");
 const FinalGame = require("../models/Final.model");
-
-// Round of 16 routes
-router.get("/roundof16", async (req, res) => {
-  try {
-    const games = await RoundOf16.find();
-    res.json(games);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-router.post("/roundof16/update", async (req, res) => {
-  try {
-    await updateRoundOf16Games();
-    res.status(200).send("Round of 16 games updated successfully");
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
 
 // Quarter-final routes
 router.get("/quarterfinalgames", async (req, res) => {
