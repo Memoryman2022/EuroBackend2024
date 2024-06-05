@@ -75,6 +75,8 @@ router.post("/:gameId/result", async (req, res, next) => {
     // Update user scores based on predictions
     for (const prediction of predictions) {
       let points = 0;
+      let correctScore = false;
+      let correctOutcome = false;
 
       // Correct score prediction
       if (
@@ -82,6 +84,7 @@ router.post("/:gameId/result", async (req, res, next) => {
         prediction.team2Score === team2Score
       ) {
         points += 5;
+        correctScore = true;
       }
 
       // Correct outcome prediction
@@ -94,12 +97,15 @@ router.post("/:gameId/result", async (req, res, next) => {
 
       if (predictedOutcome === outcome) {
         points += 2;
+        correctOutcome = true;
       }
 
       // Update the user's score
       const user = await User.findById(prediction.userId);
       if (user) {
         user.score += points;
+        if (correctScore) user.correctScores += 1;
+        if (correctOutcome) user.correctOutcomes += 1;
         await user.save();
         console.log(`Updated score for user ${user._id}: ${user.score}`);
       }

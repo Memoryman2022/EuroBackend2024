@@ -13,7 +13,7 @@ const initializeSocket = require("./utils/socket");
 const authRoutes = require("./routes/auth.router");
 const userRoutes = require("./routes/user.router");
 const predictionRoutes = require("./routes/prediction.router");
-const realResultRoutes = require("./routes/realResult.router"); // Import the new routes
+const realResultRoutes = require("./routes/realResult.router");
 const standingsRoutes = require("./routes/standings.router");
 const roundOf16Routes = require("./routes/roundOf16.router");
 const quarterFinalRoutes = require("./routes/quarterFinal.router");
@@ -62,7 +62,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/predictions", predictionRoutes);
-app.use("/api/realresults", realResultRoutes); // Register the real result routes
+app.use("/api/realresults", realResultRoutes);
 app.use("/api/groupStandings", standingsRoutes);
 app.use("/api/roundof16", roundOf16Routes);
 app.use("/api/quarterfinalgames", quarterFinalRoutes);
