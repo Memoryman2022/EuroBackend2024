@@ -36,5 +36,8 @@ COPY --from=build /app /app
 # Expose the application port
 EXPOSE 3000
 
+# Set environment variables
+ENV JWT_SECRET=OINmhNNKjB6J1gbb3MDcUWLkGIRXyeTnnhmKsIxaVPk=
+
 # Start the server
 CMD [ "node", "index.js" ]
