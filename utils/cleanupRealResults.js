@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const GroupStanding = require("../models/GroupStandings.model");
 const RealResult = require("../models/RealResult.model");
-
+const { MONGO_URI } = require("./config");
 // Function to clean up group standings based on group name pattern
 const cleanupGroupStandings = async () => {
   try {
@@ -32,7 +32,7 @@ const cleanupRealResults = async () => {
 
 // Connect to the database and run the cleanup
 mongoose
-  .connect("mongodb://localhost:27017/Euro_Sweepstake")
+  .connect(MONGO_URI)
   .then(async () => {
     console.log("Connected to the database");
     await cleanupGroupStandings();

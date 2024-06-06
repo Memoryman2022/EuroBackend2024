@@ -1,6 +1,7 @@
 // seed/roundOf16GamesSeed.js
 const mongoose = require("mongoose");
 const RoundOf16Game = require("../models/RoundOf16.model");
+const { MONGO_URI } = require("./config");
 
 const roundOf16Games = [
   { id: "R16-1", date: "29 Jun 18:00", team1: "2A", team2: "2B" },
@@ -13,7 +14,7 @@ const roundOf16Games = [
   { id: "R16-8", date: "02 Jul 21:00", team1: "1D", team2: "2F" },
 ];
 
-mongoose.connect("mongodb://localhost:27017/Euro_Sweepstake");
+mongoose.connect(MONGO_URI);
 
 const seedDB = async () => {
   try {

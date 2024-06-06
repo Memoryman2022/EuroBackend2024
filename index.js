@@ -6,6 +6,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
 
+const { MONGO_URI, allowedOrigins } = require("./config/config");
+
 const app = express();
 const server = createServer(app);
 const initializeSocket = require("./utils/socket");
@@ -29,12 +31,6 @@ app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
 
-// Determine the environment and set the MongoDB URI accordingly
-const isDevelopment = process.env.NODE_ENV === "development";
-const MONGO_URI = isDevelopment
-  ? process.env.MONGODB_URI_LOCAL
-  : process.env.MONGODB_URI_REMOTE;
-
 // Connect to MongoDB
 mongoose
   .connect(MONGO_URI)
@@ -46,12 +42,7 @@ mongoose
 // Middleware
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:3000",
-      process.env.ORIGIN,
-      "https://eurosweepstake2024.netlify.app",
-    ],
+    origin: [allowedOrigins, process.env.ORIGIN],
     credentials: true,
   })
 );

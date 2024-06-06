@@ -1,7 +1,7 @@
 // seed/quarterFinalGamesSeed.js
 const mongoose = require("mongoose");
 const QuarterFinalGame = require("../models/QuarterFinal.model");
-
+const { MONGO_URI } = require("./config");
 const quarterFinalGames = [
   { id: "Q1", date: "05 Jul 18:00", team1: "R16-4", team2: "R16-2" },
   { id: "Q2", date: "05 Jul 21:00", team1: "R16-6", team2: "R16-5" },
@@ -9,7 +9,7 @@ const quarterFinalGames = [
   { id: "Q4", date: "06 Jul 21:00", team1: "R16-7", team2: "R16-8" },
 ];
 
-mongoose.connect("mongodb://localhost:27017/Euro_Sweepstake");
+mongoose.connect(MONGO_URI);
 
 const seedDB = async () => {
   try {
