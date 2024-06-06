@@ -6,7 +6,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
 
-const { MONGO_URI } = require("./config");
+const { MONGO_URI, allowedOrigins } = require("./config/config");
 
 const app = express();
 const server = createServer(app);
@@ -42,12 +42,7 @@ mongoose
 // Middleware
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:3000",
-      process.env.ORIGIN,
-      "https://eurosweepstake2024.netlify.app",
-    ],
+    origin: [allowedOrigins, process.env.ORIGIN],
     credentials: true,
   })
 );
