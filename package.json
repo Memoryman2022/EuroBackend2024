@@ -37,6 +37,6 @@
     "npm-force-resolutions": "^0.0.10"
   },
   "resolutions": {
-    "superagent": "^9.0.2"
+    "superagent": "9.0.2"
   }
 }
