@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const FinalGame = require("../models/Final.model");
 const { finalGames } = require("../config/finalGames");
-
+const { MONGO_URI } = require("./config");
 // Function to seed final games
 const seedFinalGames = async () => {
   try {
@@ -17,7 +17,7 @@ const seedFinalGames = async () => {
 
 // Connect to the database and run the seed function
 mongoose
-  .connect("mongodb://localhost:27017/Euro_Sweepstake")
+  .connect(MONGO_URI)
   .then(() => {
     console.log("Connected to the database");
     return seedFinalGames();

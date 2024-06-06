@@ -3,7 +3,7 @@ const RoundOf16Game = require("../models/RoundOf16.model");
 const QuarterFinalGame = require("../models/QuarterFinal.model");
 const SemiFinalGame = require("../models/SemiFinal.model");
 const FinalGame = require("../models/Final.model");
-
+const { MONGO_URI } = require("./config");
 const roundOf16Games = [
   { id: "R16-1", date: "29 Jun 18:00", team1: "2A", team2: "2B" },
   { id: "R16-2", date: "29 Jun 21:00", team1: "1A", team2: "2C" },
@@ -31,7 +31,7 @@ const finalGames = [
   { id: "F1", date: "14 Jul 21:00", team1: "S1", team2: "S2" },
 ];
 
-mongoose.connect("mongodb://localhost:27017/Euro_Sweepstake");
+mongoose.connect(MONGO_URI);
 
 const seedDB = async () => {
   try {

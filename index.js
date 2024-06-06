@@ -6,6 +6,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
 
+const { MONGO_URI } = require("./config");
+
 const app = express();
 const server = createServer(app);
 const initializeSocket = require("./utils/socket");
@@ -28,12 +30,6 @@ const { errorHandler, notFoundHandler } = require("./middleware/errorHandling");
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
-
-// Determine the environment and set the MongoDB URI accordingly
-const isDevelopment = process.env.NODE_ENV === "development";
-const MONGO_URI = isDevelopment
-  ? process.env.MONGODB_URI_LOCAL
-  : process.env.MONGODB_URI_REMOTE;
 
 // Connect to MongoDB
 mongoose
