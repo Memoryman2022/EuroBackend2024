@@ -1,4 +1,4 @@
-// config.js
+// config.js/
 require("dotenv").config();
 
 // const isDevelopment = process.env.NODE_ENV === "development"
