@@ -36,16 +36,14 @@ mongoose
   .then((connection) =>
     console.log(`Connected to Database: "${connection.connections[0].name}"`)
   )
-  .catch((err) => console.error("Error connecting to the DB", err));
-
+  .catch((err) => {
+    console.error("Error connecting to the DB", err);
+    process.exit(1); // Exit the process if the database connection fails
+  });
 // Middleware
 app.use(
   cors({
-    origin: [
-      allowedOrigins,
-      process.env.ORIGIN,
-      "https://eurosweepstake2024.netlify.app",
-    ],
+    origin: allowedOrigins,
     credentials: true,
   })
 );
