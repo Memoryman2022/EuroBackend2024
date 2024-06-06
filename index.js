@@ -32,7 +32,7 @@ app.get("/health", (req, res) => {
 // Connect to MongoDB
 const connectionString = process.env.DATABASE_URL;
 const { allowedOrigins } = require("./config/config");
-await mongoose
+mongoose
   .connect(connectionString)
   .then((connection) =>
     console.log(`Connected to Database: "${connection.connections[0].name}"`)
