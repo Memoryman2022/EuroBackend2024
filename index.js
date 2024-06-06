@@ -30,9 +30,10 @@ app.get("/health", (req, res) => {
 });
 
 // Connect to MongoDB
-const { MONGO_URI, allowedOrigins } = require("./config/config");
-mongoose
-  .connect(MONGO_URI)
+const connectionString = process.env.DATABASE_URL;
+const { allowedOrigins } = require("./config/config");
+await mongoose
+  .connect(connectionString)
   .then((connection) =>
     console.log(`Connected to Database: "${connection.connections[0].name}"`)
   )
@@ -43,7 +44,11 @@ mongoose
 // Middleware
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: [
+      allowedOrigins,
+      process.env.ORIGIN,
+      "https://eurosweepstake2024.netlify.app",
+    ],
     credentials: true,
   })
 );
