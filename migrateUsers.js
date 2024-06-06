@@ -6,7 +6,7 @@ const isDevelopment = process.env.NODE_ENV === "development";
 
 const MONGO_URI = isDevelopment
   ? process.env.MONGODB_URI_LOCAL
-  : process.env.MONGODB_URI_REMOTE;
+  : process.env.DATABASE_URL;
 
 const migrateUsers = async () => {
   try {
