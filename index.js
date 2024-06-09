@@ -38,7 +38,7 @@ mongoose
     console.error("Error connecting to the DB", err);
     process.exit(1); // Exit the process if the database connection fails
   });
-// Middleware
+/// Middleware
 app.use(
   cors({
     origin: [
