@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const GroupStandings = require("../models/GroupStandings.model");
 const RoundOf16Game = require("../models/RoundOf16.model");
 
@@ -5,6 +6,7 @@ const updateRoundOf16Games = async () => {
   try {
     const standings = await GroupStandings.find();
 
+    // Create a dictionary to store team positions within their groups
     const groupPositions = {};
     standings.forEach((group) => {
       group.teams.forEach((team, index) => {
@@ -12,11 +14,12 @@ const updateRoundOf16Games = async () => {
       });
     });
 
+    // Extract third-place teams with their group identifiers
     const thirdPlaceTeams = [];
     standings.forEach((group) => {
-      const thirdPlaceTeam = group.teams[2];
+      const thirdPlaceTeam = group.teams[2]; // Third-place team
       thirdPlaceTeams.push({
-        group: group.groupName,
+        group: group.groupName, // Group identifier
         name: thirdPlaceTeam.name,
         points: thirdPlaceTeam.points,
         goalDifference: thirdPlaceTeam.goalDifference,
@@ -36,86 +39,49 @@ const updateRoundOf16Games = async () => {
     });
 
     const bestThirdPlaceTeams = thirdPlaceTeams.slice(0, 4);
-    const thirdPlaceGroups = bestThirdPlaceTeams.map((team) => team.group);
 
-    // Initialize assignments object
-    const thirdPlaceAssignments = {};
-
-    // Assign third-place teams to slots
-    const assignmentsMap = {
-      "3DEF": null,
-      "3ADEF": null,
-      "3ABC": null,
-      "3ABCD": null,
-    };
-
-    bestThirdPlaceTeams.forEach((team, index) => {
-      if (index === 0) {
-        assignmentsMap["3DEF"] = team.name;
-      } else if (index === 1) {
-        assignmentsMap["3ADEF"] = team.name;
-      } else if (index === 2) {
-        assignmentsMap["3ABC"] = team.name;
-      } else if (index === 3) {
-        assignmentsMap["3ABCD"] = team.name;
-      }
-    });
-
-    console.log("Third place assignments:", assignmentsMap);
-
+    // Define the initial round of 16 games structure
     const roundOf16Games = [
-      {
-        id: "R16-1",
-        date: "29 Jun 18:00",
-        team1: groupPositions["2GA"],
-        team2: groupPositions["2GB"],
-      },
-      {
-        id: "R16-2",
-        date: "29 Jun 21:00",
-        team1: groupPositions["1GA"],
-        team2: groupPositions["2GC"],
-      },
-      {
-        id: "R16-3",
-        date: "30 Jun 18:00",
-        team1: groupPositions["1GC"],
-        team2: assignmentsMap["3DEF"],
-      },
-      {
-        id: "R16-4",
-        date: "30 Jun 21:00",
-        team1: groupPositions["1GB"],
-        team2: assignmentsMap["3ADEF"],
-      },
-      {
-        id: "R16-5",
-        date: "01 Jul 18:00",
-        team1: groupPositions["2GD"],
-        team2: groupPositions["2GE"],
-      },
-      {
-        id: "R16-6",
-        date: "01 Jul 21:00",
-        team1: groupPositions["1GF"],
-        team2: assignmentsMap["3ABC"],
-      },
-      {
-        id: "R16-7",
-        date: "02 Jul 18:00",
-        team1: groupPositions["1GE"],
-        team2: assignmentsMap["3ABCD"],
-      },
-      {
-        id: "R16-8",
-        date: "02 Jul 21:00",
-        team1: groupPositions["1GD"],
-        team2: groupPositions["2GF"],
-      },
+      { id: "R16-1", date: "29 Jun 18:00", team1: "2GA", team2: "2GB" },
+      { id: "R16-2", date: "29 Jun 21:00", team1: "1GA", team2: "2GC" },
+      { id: "R16-3", date: "30 Jun 18:00", team1: "1GC", team2: "3DEF" },
+      { id: "R16-4", date: "30 Jun 21:00", team1: "1GB", team2: "3ADEF" },
+      { id: "R16-5", date: "01 Jul 18:00", team1: "2GD", team2: "2GE" },
+      { id: "R16-6", date: "01 Jul 21:00", team1: "1GF", team2: "3ABC" },
+      { id: "R16-7", date: "02 Jul 18:00", team1: "1GE", team2: "3ABCD" },
+      { id: "R16-8", date: "02 Jul 21:00", team1: "1GD", team2: "2GF" },
     ];
 
+    // Function to assign third-place teams to the correct fixture
+    const assignThirdPlaceTeams = (fixtures, thirdPlaceTeams) => {
+      const specificFixtures = ["R16-3", "R16-4", "R16-6", "R16-7"];
+      thirdPlaceTeams.forEach((team) => {
+        for (let fixture of fixtures) {
+          // Check if fixture's id is one of the specific fixtures
+          if (specificFixtures.includes(fixture.id)) {
+            // Check if fixture's team2 includes the team's group identifier
+            if (fixture.team2.includes(team.group.charAt(1))) {
+              fixture.team2 = team.name;
+              break;
+            }
+          }
+        }
+      });
+    };
+
+    // Assign the best third-place teams to the fixtures
+    assignThirdPlaceTeams(roundOf16Games, bestThirdPlaceTeams);
+
+    // Prepare the final round of 16 games with assigned teams
+    const finalRoundOf16Games = roundOf16Games.map((game) => ({
+      id: game.id,
+      date: game.date,
+      team1: groupPositions[game.team1] || game.team1,
+      team2: groupPositions[game.team2] || game.team2,
+    }));
+
     await RoundOf16Game.deleteMany({});
-    await RoundOf16Game.insertMany(roundOf16Games);
+    await RoundOf16Game.insertMany(finalRoundOf16Games);
 
     console.log("Round of 16 games updated successfully");
   } catch (error) {

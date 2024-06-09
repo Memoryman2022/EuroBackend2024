@@ -5,7 +5,7 @@ const userSchema = new Schema({
   userName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  profileImage: { type: String, default: "" },
+  profileImage: { type: String, required: true, default: "" },
   score: { type: Number, default: 0 },
   correctScores: { type: Number, default: 0 },
   correctOutcomes: { type: Number, default: 0 },

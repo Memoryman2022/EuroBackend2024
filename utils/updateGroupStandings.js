@@ -2,6 +2,16 @@ const mongoose = require("mongoose");
 const GroupStandings = require("../models/GroupStandings.model");
 const RealResult = require("../models/RealResult.model");
 
+// Initial groups data
+const initialGroups = {
+  GA: ["Germany", "Scotland", "Hungary", "Switzerland"],
+  GB: ["Spain", "Croatia", "Italy", "Albania"],
+  GC: ["Slovenia", "Denmark", "Serbia", "England"],
+  GD: ["Poland", "Netherlands", "Austria", "France"],
+  GE: ["Belgium", "Slovakia", "Romania", "Ukraine"],
+  GF: ["Turkey", "Georgia", "Portugal", "Czechia"],
+};
+
 // Function to calculate standings
 const calculateStandings = (groupGames) => {
   const standings = {};
@@ -88,12 +98,50 @@ const calculateStandings = (groupGames) => {
 const updateStandingsInDatabase = async (standings) => {
   for (const group of Object.keys(standings)) {
     try {
-      const updatedGroup = await GroupStandings.findOneAndUpdate(
-        { groupName: group },
-        { teams: standings[group] },
-        { upsert: true, new: true }
-      );
-      console.log(`Standings updated for ${group}:`, updatedGroup);
+      const existingGroup = await GroupStandings.findOne({ groupName: group });
+
+      const updatedTeams = standings[group];
+      const initialTeams = initialGroups[group].map((team) => ({
+        name: team,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        goalDifference: 0,
+      }));
+
+      // Ensure all initial teams are present in updatedTeams
+      initialTeams.forEach((team) => {
+        const existingTeam = updatedTeams.find((t) => t.name === team.name);
+        if (!existingTeam) {
+          updatedTeams.push(team);
+        }
+      });
+
+      // Sort the teams before saving
+      updatedTeams.sort((a, b) => {
+        if (b.points !== a.points) {
+          return b.points - a.points;
+        } else if (b.goalDifference !== a.goalDifference) {
+          return b.goalDifference - a.goalDifference;
+        } else {
+          return b.goalsFor - a.goalsFor;
+        }
+      });
+
+      if (existingGroup) {
+        existingGroup.teams = updatedTeams;
+        await existingGroup.save();
+      } else {
+        await GroupStandings.create({
+          groupName: group,
+          teams: updatedTeams,
+        });
+      }
+
+      console.log(`Standings updated for ${group}`);
     } catch (error) {
       console.error(`Error updating standings for ${group}:`, error);
     }
@@ -103,12 +151,10 @@ const updateStandingsInDatabase = async (standings) => {
 // Function to fetch and update standings based on real results
 const updateGroupStandings = async () => {
   try {
-    // Fetch all real results
     const realResults = await RealResult.find();
 
-    // Group the results by group name
     const groupGamesByGroup = realResults.reduce((acc, result) => {
-      const group = result.gameId.split("-")[0]; // Assuming gameId format is like "GA-1"
+      const group = result.gameId.split("-")[0];
       if (!acc[group]) acc[group] = [];
       acc[group].push({
         team1: result.team1,
@@ -130,5 +176,5 @@ const updateGroupStandings = async () => {
 module.exports = {
   calculateStandings,
   updateGroupStandings,
-  updateStandingsInDatabase, // Export this function to use in router
+  updateStandingsInDatabase,
 };

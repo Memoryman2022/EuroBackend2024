@@ -2,6 +2,7 @@ const express = require("express");
 const {
   calculateStandings,
   updateGroupStandings,
+  updateStandingsInDatabase,
 } = require("../utils/updateGroupStandings");
 const GroupStandings = require("../models/GroupStandings.model");
 

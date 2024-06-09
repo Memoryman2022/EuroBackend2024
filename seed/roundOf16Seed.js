@@ -1,7 +1,7 @@
 // seed/roundOf16GamesSeed.js
 const mongoose = require("mongoose");
 const RoundOf16Game = require("../models/RoundOf16.model");
-const { MONGO_URI } = require("./config");
+const { MONGO_URI } = require("../config/config");
 
 const roundOf16Games = [
   { id: "R16-1", date: "29 Jun 18:00", team1: "2A", team2: "2B" },

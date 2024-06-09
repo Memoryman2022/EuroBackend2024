@@ -14,11 +14,11 @@ const updateQuarterFinalGames = async () => {
 
     realResults.forEach((result) => {
       const winner =
-        result.team1Score > result.team2Score
+        result.outcome === "team1 win"
           ? result.team1
-          : result.team1Score < result.team2Score
+          : result.outcome === "team2 win"
           ? result.team2
-          : null; // Handle draws if necessary
+          : null;
 
       if (winner) {
         roundOf16Winners[result.gameId] = winner;
@@ -61,11 +61,11 @@ const updateSemiFinalGames = async () => {
 
     realResults.forEach((result) => {
       const winner =
-        result.team1Score > result.team2Score
+        result.outcome === "team1 win"
           ? result.team1
-          : result.team1Score < result.team2Score
+          : result.outcome === "team2 win"
           ? result.team2
-          : null; // Handle draws if necessary
+          : null;
 
       if (winner) {
         quarterFinalWinners[result.gameId] = winner;
@@ -108,11 +108,11 @@ const updateFinalGames = async () => {
 
     realResults.forEach((result) => {
       const winner =
-        result.team1Score > result.team2Score
+        result.outcome === "team1 win"
           ? result.team1
-          : result.team1Score < result.team2Score
+          : result.outcome === "team2 win"
           ? result.team2
-          : null; // Handle draws if necessary
+          : null;
 
       if (winner) {
         semiFinalWinners[result.gameId] = winner;

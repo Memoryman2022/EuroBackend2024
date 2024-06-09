@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const GroupStanding = require("../models/GroupStandings.model");
 const RealResult = require("../models/RealResult.model");
-const { MONGO_URI } = require("./config");
+const { MONGO_URI } = require("../config/config");
 // Function to clean up group standings based on group name pattern
 const cleanupGroupStandings = async () => {
   try {
