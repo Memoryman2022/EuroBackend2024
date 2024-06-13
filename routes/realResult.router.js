@@ -53,7 +53,7 @@ router.post("/:gameId/result", async (req, res, next) => {
       typeof team2 !== "string" ||
       typeof team1Score !== "number" ||
       typeof team2Score !== "number" ||
-      !["team1 win", "draw", "team2 win"].includes(outcome)
+      !["team1", "draw", "team2"].includes(outcome)
     ) {
       throw new Error("Data does not match schema requirements");
     }
@@ -88,17 +88,25 @@ router.post("/:gameId/result", async (req, res, next) => {
       }
 
       // Correct outcome prediction
-      const predictedOutcome =
-        prediction.team1Score > prediction.team2Score
-          ? "team1 win"
-          : prediction.team1Score < prediction.team2Score
-          ? "team2 win"
-          : "draw";
-
-      if (predictedOutcome === outcome) {
+      if (prediction.predictedOutcome === outcome) {
         points += 2;
         correctOutcome = true;
       }
+
+      // Log the prediction details for debugging
+      console.log(`Prediction details:`, {
+        userId: prediction.userId,
+        gameId: prediction.gameId,
+        team1Score: prediction.team1Score,
+        team2Score: prediction.team2Score,
+        predictedOutcome: prediction.predictedOutcome,
+        realTeam1Score: team1Score,
+        realTeam2Score: team2Score,
+        realOutcome: outcome,
+        pointsAwarded: points,
+        correctScore,
+        correctOutcome,
+      });
 
       // Update the user's score
       const user = await User.findById(prediction.userId);

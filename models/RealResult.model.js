@@ -10,7 +10,7 @@ const realResultSchema = new Schema(
     team2Score: { type: Number, required: true },
     outcome: {
       type: String,
-      enum: ["team1 win", "draw", "team2 win"],
+      enum: ["team1", "draw", "team2"],
       required: true,
     },
   },
