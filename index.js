@@ -35,7 +35,7 @@ if (!fs.existsSync(uploadsDir)) {
 
 // Connect to MongoDB
 const connectionString = process.env.DATABASE_URL;
-// const connectionString = process.env.MONGODB_URI_LOCAL;
+/// const connectionString = process.env.MONGODB_URI_LOCAL;
 const { allowedOrigins } = require("./config/config");
 mongoose
   .connect(connectionString)
