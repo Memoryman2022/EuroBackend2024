@@ -5,6 +5,7 @@ const { createServer } = require("http");
 const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 const server = createServer(app);
@@ -25,6 +26,12 @@ const { errorHandler, notFoundHandler } = require("./middleware/errorHandling");
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Connect to MongoDB
 const connectionString = process.env.DATABASE_URL;
