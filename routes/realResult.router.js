@@ -93,6 +93,21 @@ router.post("/:gameId/result", async (req, res, next) => {
         correctOutcome = true;
       }
 
+      // Log the prediction details for debugging
+      console.log(`Prediction details:`, {
+        userId: prediction.userId,
+        gameId: prediction.gameId,
+        team1Score: prediction.team1Score,
+        team2Score: prediction.team2Score,
+        predictedOutcome: prediction.predictedOutcome,
+        realTeam1Score: team1Score,
+        realTeam2Score: team2Score,
+        realOutcome: outcome,
+        pointsAwarded: points,
+        correctScore,
+        correctOutcome,
+      });
+
       // Update the user's score
       const user = await User.findById(prediction.userId);
       if (user) {
