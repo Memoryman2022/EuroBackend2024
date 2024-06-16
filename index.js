@@ -6,6 +6,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
+const cron = require("node-cron");
+const axios = require("axios");
 
 const app = express();
 const server = createServer(app);
@@ -35,7 +37,7 @@ if (!fs.existsSync(uploadsDir)) {
 
 // Connect to MongoDB
 const connectionString = process.env.DATABASE_URL;
-/// const connectionString = process.env.MONGODB_URI_LOCAL;
+//const connectionString = process.env.MONGODB_URI_LOCAL;
 const { allowedOrigins } = require("./config/config");
 mongoose
   .connect(connectionString)
@@ -85,4 +87,22 @@ app.use(notFoundHandler);
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Listening on port ${PORT}`);
+});
+
+// Schedule cron job to add default predictions
+cron.schedule("0 * * * *", async () => {
+  try {
+    const response = await axios.post(
+      `https://euro2024be.adaptable.app/api/predictions/addDefaultPredictions`, // Your backend API URL
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.JWT_SECRET}`,
+        },
+      }
+    );
+    console.log("Default predictions added:", response.data);
+  } catch (error) {
+    console.error("Error adding default predictions:", error);
+  }
 });

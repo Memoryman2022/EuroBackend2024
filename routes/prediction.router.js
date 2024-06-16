@@ -3,11 +3,17 @@ const router = express.Router();
 const User = require("../models/User.model");
 const Prediction = require("../models/Predictions.model");
 const { authenticateToken } = require("../middleware/authenticateToken");
-const { parse, differenceInMilliseconds } = require("date-fns");
+const {
+  parse,
+  differenceInMilliseconds,
+  isWithinInterval,
+  addHours,
+  isAfter,
+} = require("date-fns");
 
 const ONE_HOUR = 60 * 60 * 1000; // One hour in milliseconds
 
-// Function to check if the prediction window is expired
+// Function to check if the prediction window is expired or it's one hour before the match
 const isPredictionWindowExpired = (gameDate) => {
   const matchStartTime = parse(
     `${gameDate} ${new Date().getFullYear()}`,
@@ -15,12 +21,59 @@ const isPredictionWindowExpired = (gameDate) => {
     new Date()
   );
   const currentTime = new Date();
-  const timeDifference = differenceInMilliseconds(matchStartTime, currentTime);
-  const isOneHourBeforeMatch =
-    timeDifference <= ONE_HOUR && timeDifference >= 0;
+  const oneHourBeforeMatch = addHours(matchStartTime, -1);
 
-  return isOneHourBeforeMatch;
+  // Check if current time is within the one-hour window before the match start time
+  return (
+    isWithinInterval(currentTime, {
+      start: oneHourBeforeMatch,
+      end: matchStartTime,
+    }) && isAfter(matchStartTime, currentTime)
+  );
 };
+
+// Route to add default predictions
+router.post("/addDefaultPredictions", async (req, res, next) => {
+  try {
+    const allGames = await Prediction.distinct("gameId");
+    const allUsers = await User.find().select("_id");
+    const allPredictions = await Prediction.find();
+
+    for (const gameId of allGames) {
+      const predictionsForGame = allPredictions.filter(
+        (p) => p.gameId === gameId
+      );
+      const match = predictionsForGame[0]; // All predictions have the same match details
+
+      if (isPredictionWindowExpired(match.date)) {
+        const missingUsers = allUsers.filter(
+          (user) => !predictionsForGame.some((p) => p.userId.equals(user._id))
+        );
+
+        for (const user of missingUsers) {
+          const defaultPrediction = new Prediction({
+            userId: user._id,
+            gameId: match.gameId,
+            date: match.date,
+            team1: match.team1,
+            team2: match.team2,
+            team1Score: 0,
+            team2Score: 0,
+            predictedOutcome: "draw",
+            confirmed: false,
+          });
+          await defaultPrediction.save();
+        }
+      }
+    }
+
+    res
+      .status(200)
+      .json({ message: "Default predictions added where necessary." });
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Route to create a new prediction
 router.post("/", authenticateToken, async (req, res, next) => {
@@ -122,13 +175,6 @@ router.get("/all", authenticateToken, async (req, res, next) => {
         );
 
         const isOneHourBeforeMatch = isPredictionWindowExpired(match.date);
-
-        console.log(
-          `Game ${gameId} - Is One Hour Before Match: ${isOneHourBeforeMatch}`
-        );
-        console.log(
-          `Game ${gameId} - All Users Predicted: ${allUsersPredicted}`
-        );
 
         return {
           gameId: gameId,
