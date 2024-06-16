@@ -30,11 +30,11 @@ db.once("open", async function () {
   console.log("Connected to the database");
 
   const newPrediction = new Prediction({
-    userId: new mongoose.Types.ObjectId("66667ec8eae16b7ee15c8163"),
-    gameId: "GA-2",
-    date: "15 Jun 15:00",
-    team1: "Hungary",
-    team2: "Switzerland",
+    userId: new mongoose.Types.ObjectId("66662f540071e3030ba4c292"),
+    gameId: "GD-1",
+    date: "16 Jun 15:00",
+    team1: "Poland",
+    team2: "Nethrlands",
     team1Score: 0,
     team2Score: 0,
     predictedOutcome: "draw",
