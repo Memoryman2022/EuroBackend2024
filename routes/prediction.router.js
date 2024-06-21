@@ -45,6 +45,9 @@ router.post("/addDefaultPredictions", async (req, res, next) => {
       );
       const match = predictionsForGame[0]; // All predictions have the same match details
 
+      console.log("Game ID:", gameId);
+      console.log("Match Details:", match);
+
       if (isPredictionWindowExpired(match.date)) {
         const missingUsers = allUsers.filter(
           (user) => !predictionsForGame.some((p) => p.userId.equals(user._id))
@@ -175,6 +178,13 @@ router.get("/all", authenticateToken, async (req, res, next) => {
         );
 
         const isOneHourBeforeMatch = isPredictionWindowExpired(match.date);
+
+        console.log(
+          `Game ${gameId} - Is One Hour Before Match: ${isOneHourBeforeMatch}`
+        );
+        console.log(
+          `Game ${gameId} - All Users Predicted: ${allUsersPredicted}`
+        );
 
         return {
           gameId: gameId,
