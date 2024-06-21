@@ -103,6 +103,10 @@ cron.schedule("0 * * * *", async () => {
     );
     console.log("Default predictions added:", response.data);
   } catch (error) {
-    console.error("Error adding default predictions:", error);
+    const currentTimestamp = new Date().toLocaleString();
+    console.error(
+      `[${currentTimestamp}] Error adding default predictions:`,
+      error
+    );
   }
 });
